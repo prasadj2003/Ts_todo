@@ -3,6 +3,7 @@ import cors from "cors";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { PrismaClient } from '@prisma/client';
+import authenticateToken from "./middleware/authentication";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -65,6 +66,48 @@ app.post('/signup', async (req: any, res: any) => {
         });
     }
 });
+
+const userSignin = z.object({
+    username: z.string(),
+    password: z.string()
+})
+
+app.post('/signin', authenticateToken, async (req: any, res: any) => {
+    try {
+        // user will signin with username and password
+        const userData = userSignin.safeParse(req.body);
+
+        if(!userData.success) {
+            res.status(403).json({
+                msg: "enter proper username and password"
+            });
+        }
+
+        // if it passes validation then run a lookup in DB to find valid username and password
+
+        const userInDB = await prisma.user.findUnique({
+            where: {
+                username: req.body.username,
+            }
+        });
+
+        if(!userInDB || userInDB.password !== req.body.password) {
+            res.json(401).json({
+                msg: "incorrect email or password"
+            })
+        }
+
+        res.status(201).json({
+            msg: "signin successful"
+        })
+        // const token = jwt.sign({username: userInDB?.username}, JWT_SECRET)
+    } catch (error) {
+        console.error("Error during sign-in:", error);
+        return res.status(500).json({
+            msg: "An error occurred while signing in"
+        });
+    }
+})
 
 app.listen(3000, () => {
     console.log("Server listening...");
