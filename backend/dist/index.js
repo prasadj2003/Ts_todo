@@ -103,6 +103,113 @@ app.post('/signin', authentication_1.default, (req, res) => __awaiter(void 0, vo
         });
     }
 }));
+// Todos specific routes
+// getting todos
+app.get('/todos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const todos = yield prisma.todo.findMany();
+        // No need to check for a falsy value, an empty array is a valid result.
+        res.status(200).json({
+            success: true,
+            todos,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            msg: "Could not fetch todos",
+        });
+    }
+}));
+// adding todos
+const todoBody = zod_1.z.object({
+    title: zod_1.z.string().trim().min(2),
+    description: zod_1.z.string().trim().min(2),
+});
+app.post('/todos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const todo = todoBody.safeParse(req.body);
+        if (!todo.success) {
+            return res.status(400).json({
+                msg: "todo body is not in proper format"
+            });
+        }
+        // if safely parsed by zod then push it in the database
+        const todoInDB = yield prisma.todo.create({
+            data: {
+                title: req.body.title,
+                description: req.body.description
+            }
+        });
+        res.status(200).json({
+            msg: "todo added successfully"
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).json({
+            msg: "failed to add todo"
+        });
+    }
+}));
+// updating todos
+// id should be number it cannot be string according to our prisma schema
+const updateTodoBody = zod_1.z.object({
+    id: zod_1.z.number(),
+    title: zod_1.z.string().trim().min(2),
+    description: zod_1.z.string().trim().min(2),
+    completed: zod_1.z.boolean()
+});
+app.put('/todos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const todo = updateTodoBody.safeParse(req.body);
+    if (!todo.success) {
+        return res.status(400).json({
+            msg: "Todo body not in proper format",
+        });
+    }
+    try {
+        // 1. Find the todo by ID to ensure it exists
+        const todoInDB = yield prisma.todo.findUnique({
+            where: {
+                id: todo.data.id,
+            },
+        });
+        // 2. If the todo is not found, return a 404 error
+        if (!todoInDB) {
+            return res.status(404).json({
+                msg: "Todo not found",
+            });
+        }
+        // 3. Prepare the update object dynamically
+        const updateData = {};
+        if (todo.data.title)
+            updateData.title = todo.data.title;
+        if (todo.data.description)
+            updateData.description = todo.data.description;
+        if (todo.data.completed)
+            updateData.completed = todo.data.completed;
+        // 4. Update the todo in the database
+        const updatedTodo = yield prisma.todo.update({
+            where: {
+                id: todo.data.id,
+            },
+            data: updateData,
+        });
+        // 5. Return the updated todo as a response
+        res.status(200).json({
+            success: true,
+            msg: "Todo updated successfully",
+            todo: updatedTodo,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            msg: "Error updating todo",
+        });
+    }
+}));
 app.listen(3000, () => {
     console.log("Server listening...");
 });

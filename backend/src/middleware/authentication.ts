@@ -7,7 +7,7 @@ const authenticateToken = (req: any, res: any, next: any) => {
 
     if(!token) {
         req.status(403).json({
-            msg: "Accedd denied no valid token provided"
+            msg: "Access denied no valid token provided"
         });
     }
 

@@ -10,7 +10,7 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) {
         req.status(403).json({
-            msg: "Accedd denied no valid token provided"
+            msg: "Access denied no valid token provided"
         });
     }
     jsonwebtoken_1.default.verify(token, JWT_SECRET, (err, user) => {
