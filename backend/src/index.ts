@@ -169,26 +169,26 @@ app.post('/todos', async (req: any, res: any) => {
 
 // id should be number it cannot be string according to our prisma schema
 const updateTodoBody = z.object({
-    id: z.number(),
     title: z.string().trim().min(2),
     description: z.string().trim().min(2),
-    completed: z.boolean()
-})
-app.put('/todos', async (req: any, res: any) => {
+    completed: z.boolean(),
+});
+
+app.put('/todos/:id', async (req: any, res: any) => {
     const todo = updateTodoBody.safeParse(req.body);
+    const todoId = parseInt(req.params.id, 10);
 
     if (!todo.success) {
         return res.status(400).json({
             msg: "Todo body not in proper format",
+            errors: todo.error.issues,  // Return validation errors for clarity
         });
     }
 
     try {
         // 1. Find the todo by ID to ensure it exists
         const todoInDB = await prisma.todo.findUnique({
-            where: {
-                id: todo.data.id,
-            },
+            where: { id: todoId },
         });
 
         // 2. If the todo is not found, return a 404 error
@@ -202,18 +202,16 @@ app.put('/todos', async (req: any, res: any) => {
         const updateData: any = {};
         if (todo.data.title) updateData.title = todo.data.title;
         if (todo.data.description) updateData.description = todo.data.description;
-        if(todo.data.completed) updateData.completed = todo.data.completed;
+        if (todo.data.hasOwnProperty('completed')) updateData.completed = todo.data.completed;
 
         // 4. Update the todo in the database
         const updatedTodo = await prisma.todo.update({
-            where: {
-                id: todo.data.id,
-            },
+            where: { id: todoId },
             data: updateData,
         });
 
         // 5. Return the updated todo as a response
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             msg: "Todo updated successfully",
             todo: updatedTodo,
@@ -225,6 +223,47 @@ app.put('/todos', async (req: any, res: any) => {
         });
     }
 });
+
+
+
+app.delete('/todos/:id', async(req: any, res: any) => {
+    // complete this and edit put id should be passed in header
+    // 1. find todo with id
+    // 2. if todo does not exist return with appropriate error message
+    //3. if todo exists delete from the database
+
+    try {
+        const todoID = parseInt(req.params.id, 10);
+
+        const todoInDB = await prisma.todo.findUnique({
+            where: {
+                id: todoID
+            }
+        });
+
+        if(!todoInDB) {
+            return res.status(404).json({
+                msg: "todo with id not found"
+            });
+        }
+
+        const response = await prisma.todo.delete({
+            where: {
+                id: todoID
+            }
+        });
+
+        return res.status(200).json({
+            msg: "todo deleted successfully",
+            todos: response
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: "could not delete todo"
+        })
+    }
+})
 
 
 app.listen(3000, () => {
