@@ -1,147 +1,128 @@
-// import { useState } from "react";
-// import axios from "axios";
+import { useState } from "react";
+import axios from "axios";
 
-// function Signup() {
+function Signup() {
+  const [username, setUsername] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [password, setPassword] = useState("");
 
-//     const [username, setUsername] = useState("");
-//     const [firstname, setFirstname] = useState("");
-//     const [lastname, setLastname] = useState("");
-//     const [password, setPassword] = useState("");
+  async function handleClick(e: any) {
+    e.preventDefault();
 
-//     async function handleClick(e: any) {
-//         e.preventDefault();
+    const user = {
+      username: username,
+      firstname: firstname,
+      lastname: lastname,
+      password: password,
+    };
 
-//         const user = {
-//             username: username,
-//             firstname: firstname,
-//             lastname: lastname,
-//             password: password
-//         }
+    try {
+      await axios.post("http://localhost:3000/signup", user);
+      alert("signed up successfully");
+      setUsername("");
+      setFirstname("");
+      setLastname("");
+      setPassword("");
+    } catch (error) {
+      console.log("error signing up: ", error);
+      alert("signup failed") 
+    }
 
-//         await axios.post("http://localhost:3000/signup", user)
-//     }
+  }
+    
 
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black">
+      <div className="bg-slate-600 shadow-md rounded-lg p-8 max-w-md w-full">
+        <h1 className="mb-6 block text-3xl font-medium text-gray-900 dark:text-white">
+          Signup
+        </h1>
 
-//   return (
-//     <div>
-//         <h1>Signup</h1>
-        
-//         <label id="username" htmlFor="username"></label>
-//         <input id="username" name="username" placeholder="user@123" onChange={(e) => setUsername(e.target.value)}></input>
-//         <label id="firstname" htmlFor="firstname"></label>
-//         <input id="firstname" name="firstname" placeholder="john" onChange={(e) => setFirstname(e.target.value)}></input>
-//         <label id="lastname" htmlFor="lastname"></label>
-//         <input id="lastname" name="lastname" placeholder="doe" onChange={(e) => setLastname(e.target.value)}></input>
-//         <label id="password" htmlFor="password"></label>
-//         <input id="password" name="password" placeholder="password" type="password" onChange={(e) => setPassword(e.target.value)}></input>
-//         <button onClick={handleClick}>Sign up</button>
-//     </div>
-//   )
-// }
-// export default Signup
+        <form>
+          <label
+            htmlFor="username"
+            className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            username
+          </label>
+          <input
+            id="username"
+            name="username"
+            placeholder="prasad@123"
+            value={username}
+            required
+            onChange={(e) => setUsername(e.target.value)}
+            className="mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
 
-// import { useState } from "react";
-// import axios from "axios";
+          <label
+            htmlFor="firstname"
+            className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            firstname
+          </label>
+          <input
+            id="firstname"
+            name="firstname"
+            placeholder="Prasad"
+            value={firstname}
+            required
+            onChange={(e) => setFirstname(e.target.value)}
+            className="mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
 
-// function Signup() {
-//   const [username, setUsername] = useState("");
-//   const [firstname, setFirstname] = useState("");
-//   const [lastname, setLastname] = useState("");
-//   const [password, setPassword] = useState("");
+          <label
+            htmlFor="lastname"
+            className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            lastname
+          </label>
+          <input
+            id="lastname"
+            name="lastname"
+            placeholder="Joshi"
+            value={lastname}
+            required
+            onChange={(e) => setLastname(e.target.value)}
+            className="mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
 
-//   async function handleClick(e: any) {
-//     e.preventDefault();
+          <label
+            htmlFor="password"
+            className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            password
+          </label>
+          <input
+            id="password"
+            name="password"
+            placeholder="******"
+            value={password}
+            type="password"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+            className="mb-2 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          />
+        </form>
 
-//     const user = {
-//       username,
-//       firstname,
-//       lastname,
-//       password,
-//     };
-
-//     try {
-//       await axios.post("http://localhost:3000/signup", user);
-//       alert("Signup successful");
-//       setUsername("");
-//       setFirstname("");
-//       setLastname("");
-//       setPassword("");
-//     } catch (error) {
-//       console.error("Error signing up:", error);
-//       alert("Signup failed");
-//     }
-//   }
-
-//   return (
-//     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-//       <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
-//         <h1 className="text-2xl font-bold text-center mb-6">Sign Up</h1>
-        
-//         <form className="space-y-4">
-//           <div>
-//             <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-//             <input 
-//               id="username"
-//               name="username"
-//               placeholder="user@123"
-//               value={username}
-//               onChange={(e) => setUsername(e.target.value)}
-//               className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
-//               required
-//             />
-//           </div>
-
-//           <div>
-//             <label htmlFor="firstname" className="block text-sm font-medium text-gray-700">First Name</label>
-//             <input 
-//               id="firstname"
-//               name="firstname"
-//               placeholder="John"
-//               value={firstname}
-//               onChange={(e) => setFirstname(e.target.value)}
-//               className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
-//               required
-//             />
-//           </div>
-
-//           <div>
-//             <label htmlFor="lastname" className="block text-sm font-medium text-gray-700">Last Name</label>
-//             <input 
-//               id="lastname"
-//               name="lastname"
-//               placeholder="Doe"
-//               value={lastname}
-//               onChange={(e) => setLastname(e.target.value)}
-//               className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
-//               required
-//             />
-//           </div>
-
-//           <div>
-//             <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-//             <input 
-//               id="password"
-//               name="password"
-//               type="password"
-//               placeholder="********"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
-//               required
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             onClick={handleClick}
-//             className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-400"
-//           >
-//             Sign Up
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Signup;
+        <button
+          className="mt-2 w-full text-white bg-blue-600 hover:bg-black focus:ring-2 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-lg px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+          onClick={handleClick}
+        >
+          Sign up
+        </button>
+        <p className="mt-1 text-sm font-light text-white dark:text-white">
+          Already have an account?{" "}
+          <a
+            href="#"
+            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+          >
+            Sign in
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
+export default Signup;
