@@ -15,6 +15,9 @@ The **Todo App** helps users to organize their day effortlessly. Manage tasks, t
 - **Progress Tracking**: Keep an eye on your progress and manage deadlines
 - **Cross-Platform Support**: Works seamlessly across devices
 
+![signin](image-1.png)
+![signup](image-2.png)
+
 ## Project Structure
 
 This project is built with **Vite** and **React**, ensuring fast and smooth development.
