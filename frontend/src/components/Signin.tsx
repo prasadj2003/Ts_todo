@@ -1,10 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 function Signin() {
   // only username and password
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
     async function handleClick(e: any) {
         e.preventDefault();
@@ -14,13 +16,16 @@ function Signin() {
           };
       
           try {
-            await axios.post("http://localhost:3000/signin", user);
-            alert("signed in successfully");
+            const res = await axios.post("http://localhost:3000/signin", user);
+            if(res) {
+              alert("signed in successfully");
+              navigate("/homepage")
+            }
             setUsername("");
             setPassword("");
           } catch (error) {
             console.log("error signing up: ", error);
-            alert("signup failed") 
+            alert("incorrect username or password") 
           }
     }
 
