@@ -44,26 +44,30 @@ function Homepage() {
   async function handleComplete(todoId: number) {
     // style should be strike through and completed marked as true in DB
     try {
-      const res = await axios.put(`http://localhost:3000/todos/${todoId}`, {completed: true})
-      setTodos(todos.map(todo => todo.id === todoId ? { ...todo, completed: true } : todo));
-      console.log("todo completed", res)
+      const res = await axios.put(`http://localhost:3000/todos/${todoId}`, {
+        completed: true,
+      });
+      setTodos(
+        todos.map((todo) =>
+          todo.id === todoId ? { ...todo, completed: true } : todo
+        )
+      );
+      console.log("todo completed", res);
     } catch (error) {
-      console.log("failed to complete todo", error)
+      console.log("failed to complete todo", error);
     }
   }
 
-  async function handleEdit() {
-    
-  }
+  async function handleEdit() {}
 
   async function handleDelete(todoId: number) {
-
-
     try {
-      const result = await axios.delete(`http://localhost:3000/todos/${todoId}`)
+      const result = await axios.delete(
+        `http://localhost:3000/todos/${todoId}`
+      );
       console.log(result);
     } catch (error) {
-      console.log("error deleteing todo: ", error)
+      console.log("error deleteing todo: ", error);
     }
   }
 
@@ -106,17 +110,34 @@ function Homepage() {
           >
             <h1 className="text-white font-bold">{todo.title}</h1>
             <h2 className="text-white">{todo.description}</h2>
-            <button className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={handleComplete}>
+            <button
+              className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+              onClick={handleComplete}
+            >
               Complete
             </button>
-            <button className="mtext-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={() => handleEdit(todo.id)}>
+            <button
+              className="mtext-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+              onClick={() => handleEdit(todo.id)}
+            >
               Edit
             </button>
-            <button className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={() => handleDelete(todo.id)}>
+            <button
+              className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+              onClick={() => handleDelete(todo.id)}
+            >
               Delete
             </button>
           </div>
         ))}
+      </div>
+      <div className="flex items-center">
+        <button className="bg-indigo-600 hover:bg-indigo-500 py-2 px-6 rounded-lg text-white m-6">
+        <a href="/calendar">Calendar</a>
+        </button>
+        <button className="bg-green-600 hover:bg-green-500 py-2 px-6 rounded-lg text-white">
+          Statistics
+        </button>
       </div>
     </div>
   );

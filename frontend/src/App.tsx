@@ -1,7 +1,9 @@
+import Calendar from "./components/Calendar"
 import Homepage from "./components/Homepage"
 import Landing from "./components/Landing"
 import Signin from "./components/Signin"
 import Signup from "./components/Signup"
+
 
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
@@ -18,6 +20,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/homepage" element={<Homepage />} />
+        <Route path="/calendar" element={<Calendar />} />
       </Routes>
     </BrowserRouter>
   )
