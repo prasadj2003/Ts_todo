@@ -5,10 +5,10 @@ import managementGif from "../assets/management.gif";
 
 const Landing: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-600 to-gray-800 text-white">
       {/* Header with Title */}
       <header className="w-full py-6 px-8 mt-10 flex justify-center">
-        <h1 className="text-5xl font-bold">Todo App</h1>
+        <h1 className="text-5xl font-bold">TaskTrek</h1>
       </header>
 
       {/* Main Section */}

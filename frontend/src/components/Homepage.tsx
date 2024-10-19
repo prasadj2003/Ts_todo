@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Homepage() {
   interface Todo {
@@ -9,6 +10,8 @@ function Homepage() {
     completed: boolean;
   }
 
+  const navigate = useNavigate();
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todoTitle, setTodoTitle] = useState<string>("");
   const [todoDescription, setTodoDescription] = useState<string>("");
@@ -16,98 +19,145 @@ function Homepage() {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editTodoId, setEditTodoId] = useState<number | null>(null);
 
-  // Fetch todos from backend only once when the component mounts
-  useEffect(() => {
-    async function fetchTodos() {
-      try {
-        const res = await axios.get("http://localhost:3000/todos");
-        console.log("Fetched todos:", res.data.todos); // Log to see fetched data
-        setTodos(res.data.todos || []); // Add fallback to avoid setting undefined
-      } catch (error) {
-        console.log("Error fetching todos", error);
-      }
+  // Fetch todos from the backend when the component mounts
+  const fetchTodos = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/todos");
+      console.log("Fetched todos:", res.data.todos);
+      setTodos(res.data.todos || []);
+    } catch (error) {
+      console.log("Error fetching todos", error);
     }
+  };
+
+  useEffect(() => {
+    // async function fetchTodos() {
+    //   try {
+    //     const res = await axios.get("http://localhost:3000/todos");
+    //     console.log("Fetched todos:", res.data.todos);
+    //     setTodos(res.data.todos || []); // Set todos to an empty array if undefined
+    //   } catch (error) {
+    //     console.log("Error fetching todos", error);
+    //   }
+    // }
 
     fetchTodos();
   }, []);
 
+  // async function handleClick() {
+  //   const todoBody = {
+  //     title: todoTitle,
+  //     description: todoDescription,
+  //   };
+
+  //   try {
+  //     if (isEditing && editTodoId !== null) {
+  //       // Update the todo
+  //       const updatedTodo = {
+  //         title: todoTitle,
+  //         description: todoDescription,
+  //         completed: false, // Keep it false while editing
+  //       };
+  //       const res = await axios.put(`http://localhost:3000/todos/${editTodoId}`, updatedTodo);
+
+  //       setTodos(
+  //         todos.map((todo) =>
+  //           todo.id === editTodoId
+  //             ? { ...todo, title: updatedTodo.title, description: updatedTodo.description }
+  //             : todo
+  //         )
+  //       );
+  //       console.log("Todo updated successfully", res);
+  //       setIsEditing(false);
+  //       setEditTodoId(null);
+  //     } else {
+  //       // Add a new todo
+  //       const res = await axios.post("http://localhost:3000/todos", todoBody);
+  //       setTodos((prevTodos) => [...prevTodos, { ...res.data.todo, completed: false }]); // Include completed as false for new todos
+  //       console.log("Todo added successfully", res);
+  //     }
+
+  //     setTodoTitle("");
+  //     setTodoDescription("");
+  //   } catch (error) {
+  //     console.log("Error adding or updating todo", error);
+  //   }
+  // }
+
   async function handleClick() {
-    if (isEditing && editTodoId !== null) {
-      try {
-        const updatedTodo = {
-          title: todoTitle,
-          description: todoDescription,
-          completed: false,
-        };
+    const todoBody = {
+      title: todoTitle,
+      description: todoDescription,
+    };
 
-        await axios.put(`http://localhost:3000/todos/${editTodoId}`, updatedTodo);
-        const updatedTodos = todos.map((todo) =>
-          todo.id === editTodoId ? { ...todo, title: todoTitle, description: todoDescription } : todo
-        );
-        setTodos(updatedTodos);
-        setIsEditing(false);
-        setEditTodoId(null);
-        setTodoTitle("");
-        setTodoDescription("");
-      } catch (error) {
-        console.error("Error updating todo:", error);
-      }
-    } else {
-      const newTodo = {
-        title: todoTitle,
-        description: todoDescription,
-        completed: false,
-      };
-
-      try {
-        const res = await axios.post("http://localhost:3000/todos", newTodo);
-        setTodos((prevTodos) => [...prevTodos, res.data.todo]);
-        setTodoTitle("");
-        setTodoDescription("");
-      } catch (error) {
-        console.error("Error adding todo:", error);
-      }
+    try {
+      const res = await axios.post("http://localhost:3000/todos", todoBody);
+      setTodoTitle("");
+      setTodoDescription("");
+      console.log("todo added successfully", res);
+      fetchTodos();
+    } catch (error) {
+      console.log("error adding todo", error);
     }
   }
 
-  async function handleComplete(todoId: number) {
-    try {
-      const res = await axios.put(`http://localhost:3000/todos/${todoId}`, {
-        completed: true,
-      });
-      setTodos(
-        todos.map((todo) =>
-          todo.id === todoId ? { ...todo, completed: true } : todo
-        )
-      );
-      console.log("Todo completed", res);
-    } catch (error) {
-      console.error("Failed to complete todo", error);
-    }
+  // async function handleComplete(todoId: number) {
+  //   try {
+  //     const res = await axios.put(`http://localhost:3000/todos/${todoId}`, {
+  //       completed: true,
+  //     });
+
+  //     setTodos(
+  //       todos.map((todo) =>
+  //         todo.id === todoId ? { ...todo, completed: true } : todo
+  //       )
+  //     );
+  //     console.log("Todo completed", res);
+  //   } catch (error) {
+  //     console.error("Failed to complete todo", error);
+  //   }
+  // }
+
+  async function handleComplete(id: number) {
+    const todoToBeCompleted = todos.find((todo) => todo.id === id);
+    console.log(todoToBeCompleted);
+    // title, description and completed needs to be in the todo body -> I am getting this message "Todo body not in proper format"
+    const res = await axios.put(`http://localhost:3000/todos/${id}`, {
+      ...todoToBeCompleted,
+      completed: true,
+    });
+    if (res.statusText === "OK")
+      alert(`todo with id:${id} marked as completed`);
+    else alert("todo not marked as completed");
+    fetchTodos();
   }
 
   async function handleEdit(id: number) {
     const todoToEdit = todos.find((todo) => todo.id === id);
-
+    setIsEditing(true);
     if (todoToEdit) {
       setTodoTitle(todoToEdit.title);
       setTodoDescription(todoToEdit.description);
       setIsEditing(true);
       setEditTodoId(id);
     }
+    fetchTodos();
   }
 
   async function handleDelete(todoId: number) {
     try {
       await axios.delete(`http://localhost:3000/todos/${todoId}`);
       setTodos(todos.filter((todo) => todo.id !== todoId));
+      console.log("Todo deleted successfully");
     } catch (error) {
-      console.error("Error deleting todo:", error);
+      console.error("Error deleting todo", error);
     }
+    fetchTodos();
   }
 
   return (
-    <div className="bg-black w-full h-screen flex flex-col items-center justify-start pt-10">
+    <div className="bg-gradient-to-b from-gray-600 to-gray-800 w-full h-screen flex flex-col items-center justify-start pt-10 overflow-auto">
+      <h1 className="color-white text-white font-bold text-5xl mb-5">TaskTrek</h1>
       <div className="flex flex-row space-x-4">
         <input
           name="todo"
@@ -125,7 +175,7 @@ function Homepage() {
           type="text"
           value={todoDescription}
           className="text-black font-mono w-32 p-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="description..."
+          placeholder="Description..."
           onChange={(e) => setTodoDescription(e.target.value)}
         />
         <button
@@ -138,7 +188,7 @@ function Homepage() {
       </div>
 
       <div className="mt-8">
-        {todos.length > 0 ? ( // Ensure todos exist before rendering
+        {todos.length > 0 ? (
           todos.map((todo) => (
             <div
               key={todo.id}
@@ -172,9 +222,22 @@ function Homepage() {
           <p className="text-white">No todos found</p>
         )}
       </div>
+      <div className="flex flex-row justify-center items-center">
+        <button
+          className="w-60 py-3 px-6 mb-4 mr-5 text-lg font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-200"
+          onClick={() => navigate("/calendar")}
+        >
+          calendar
+        </button>
+        <button
+          className="w-60 py-3 px-6 mb-4 ml-5 text-lg font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-200"
+          onClick={() => navigate("/statistics")}
+        >
+          statistics
+        </button>
+      </div>
     </div>
   );
 }
 
 export default Homepage;
- 

@@ -2,6 +2,7 @@ import { Calendar as FullCalendar } from '@fullcalendar/core'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -11,6 +12,10 @@ interface Todo {
 }
 
 function Calendar() {
+
+  const navigate = useNavigate();
+
+
   const calendarEl = useRef<HTMLDivElement>(null)
   const [allTodosOfDay, setAllTodosOfDay] = useState<Todo[]>([]) // Set the correct type for the state
 
@@ -35,7 +40,7 @@ function Calendar() {
       const calendar = new FullCalendar(calendarEl.current, {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
-        weekends: false,
+        weekends: true,
         height: '100%',
         aspectRatio: 1.5,
         events: allTodosOfDay.map((todo) => ({
@@ -52,8 +57,24 @@ function Calendar() {
       <div 
         id="calendar" 
         ref={calendarEl} 
-        className="h-full w-full max-w-7xl p-4 bg-white shadow-lg rounded-lg overflow-auto"
+        className="h-full w-2/3 max-w-7xl p-4 bg-white shadow-lg rounded-lg overflow-auto"
       />
+      <div className="flex flex-col items-center justify-center bg-gradient-to-b from-gray-600 to-gray-800 w-1/3 h-full">
+    <button 
+      className="w-60 py-3 px-6 mb-4 text-lg font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-200"
+      onClick={() => navigate('/homepage')}
+    >
+      Home
+    </button>
+    
+    <button 
+      className="w-60 py-3 px-6 mb-4 text-lg font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-200"
+      onClick={() => navigate('/statistics')}
+    >
+      Statistics
+    </button>
+  </div>
+      
     </div>
   )
 }

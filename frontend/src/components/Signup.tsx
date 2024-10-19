@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [username, setUsername] = useState("");
@@ -7,28 +8,38 @@ function Signup() {
   const [lastname, setLastname] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleClick(e: any) {
+  const navigate = useNavigate();
+
+  async function handleClick(e: React.FormEvent) {
     e.preventDefault();
 
     const user = {
-      username: username,
-      firstname: firstname,
-      lastname: lastname,
-      password: password,
+      username,
+      firstname,
+      lastname,
+      password,
     };
 
     try {
-      await axios.post("http://localhost:3000/signup", user);
-      alert("signed up successfully");
+      const response = await axios.post("http://localhost:3000/signup", user);
+      alert("Signed up successfully");
+      console.log("Token:", response.data.token);
+      // Store the token in localStorage or state management solution
+      localStorage.setItem("token", response.data.token);
+      // Reset form fields
       setUsername("");
       setFirstname("");
       setLastname("");
       setPassword("");
+      navigate("/signin");
     } catch (error) {
-      console.log("error signing up: ", error);
-      alert("signup failed") 
+      console.error("Error signing up:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        alert(`Signup failed: ${error.response.data.msg}`);
+      } else {
+        alert("Signup failed: An unexpected error occurred");
+      }
     }
-
   }
     
 
