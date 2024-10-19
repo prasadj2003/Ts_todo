@@ -6,7 +6,7 @@ const authenticateToken = (req: any, res: any, next: any) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if(!token) {
-        req.status(403).json({
+        res.status(403).json({
             msg: "Access denied no valid token provided"
         });
     }

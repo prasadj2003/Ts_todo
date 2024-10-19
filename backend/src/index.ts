@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { PrismaClient } from '@prisma/client';
 import authenticateToken from "./middleware/authentication";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
@@ -11,8 +13,8 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use(cors());
 
-require("dotenv").config();
-const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
+// require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
 const User = z.object({
     username: z.string(),
@@ -23,14 +25,61 @@ const User = z.object({
 
 
 
+// app.post('/signup', async (req: any, res: any) => {
+//     try {
+//         const userData = User.safeParse(req.body);
+
+//         if (!userData.success) {
+//             return res.status(400).json({ msg: "Validation failed", errors: userData.error });
+//         }
+
+//         const existingUser = await prisma.user.findUnique({
+//             where: {
+//                 username: userData.data.username
+//             }
+//         });
+
+//         if (existingUser) {
+//             return res.status(409).json({
+//                 msg: "User already exists"
+//             });
+//         }
+
+//         const newUser = await prisma.user.create({
+//             data: {
+//                 username: userData.data.username,
+//                 firstname: userData.data.firstname,
+//                 lastname: userData.data.lastname,
+//                 password: userData.data.password
+//             }
+//         });
+
+//         const token = jwt.sign({ username: userData.data.username }, JWT_SECRET, {expiresIn: '365d'});
+//         localStorage.setItem("token", token)
+//         res.status(201).json({
+//             token: token,
+//             msg: "User created successfully"
+//         });
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(403).json({
+//             msg: "Error occurred while processing the request"
+//         });
+//     }
+// });
+
 app.post('/signup', async (req: any, res: any) => {
     try {
+        // Validate the user data
         const userData = User.safeParse(req.body);
 
         if (!userData.success) {
+            // If validation fails, return a 400 response with validation errors
             return res.status(400).json({ msg: "Validation failed", errors: userData.error });
         }
 
+        // Check if the user already exists
         const existingUser = await prisma.user.findUnique({
             where: {
                 username: userData.data.username
@@ -38,76 +87,91 @@ app.post('/signup', async (req: any, res: any) => {
         });
 
         if (existingUser) {
+            // If user exists, return a 409 conflict
             return res.status(409).json({
                 msg: "User already exists"
             });
         }
 
+        // Create a new user in the database
         const newUser = await prisma.user.create({
             data: {
                 username: userData.data.username,
                 firstname: userData.data.firstname,
                 lastname: userData.data.lastname,
-                password: userData.data.password
+                password: userData.data.password // Ideally, hash the password before saving!
             }
         });
 
-        const token = jwt.sign({ username: userData.data.username }, JWT_SECRET, {expiresIn: '365d'});
+        // Generate a JWT token
+        const token = jwt.sign(
+            { username: userData.data.username }, 
+            JWT_SECRET, 
+            { expiresIn: '365d' }
+        );
 
+        // Send the token back in the response (frontend will store it)
         res.status(201).json({
             token: token,
             msg: "User created successfully"
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(403).json({
+        console.error("Error during signup:", error);
+        res.status(500).json({
             msg: "Error occurred while processing the request"
         });
     }
 });
+
 
 const userSignin = z.object({
     username: z.string(),
     password: z.string()
 })
 
-app.post('/signin', authenticateToken, async (req: any, res: any) => {
+app.post('/signin', async (req: any, res: any) => {
     try {
-        // user will signin with username and password
+        // Parse user input
         const userData = userSignin.safeParse(req.body);
 
-        if(!userData.success) {
-            res.status(403).json({
-                msg: "enter proper username and password"
+        if (!userData.success) {
+            return res.status(403).json({
+                msg: "Enter proper username and password"
             });
         }
 
-        // if it passes validation then run a lookup in DB to find valid username and password
-
+        // Find user in the database by username
         const userInDB = await prisma.user.findUnique({
             where: {
                 username: req.body.username,
             }
         });
 
-        if(!userInDB || userInDB.password !== req.body.password) {
-            res.json(401).json({
-                msg: "incorrect email or password"
-            })
+        // Check if user exists and if the password matches
+        if (!userInDB || userInDB.password !== req.body.password) {
+            return res.status(401).json({
+                msg: "Incorrect username or password"
+            });
         }
 
-        res.status(201).json({
-            msg: "signin successful"
-        })
-        // const token = jwt.sign({username: userInDB?.username}, JWT_SECRET)
+        // Generate JWT token
+        const token = jwt.sign({ username: userInDB.username }, JWT_SECRET, { expiresIn: '365d' });
+
+        // Respond with the token and success message
+        return res.status(200).json({
+            token: token,
+            msg: "Sign-in successful"
+        });
+
     } catch (error) {
         console.error("Error during sign-in:", error);
         return res.status(500).json({
             msg: "An error occurred while signing in"
         });
     }
-})
+});
+
 
 // Todos specific routes
 
@@ -133,7 +197,7 @@ app.get('/todos', async (req: any, res: any) => {
 // adding todos
 const todoBody = z.object({
     title: z.string().trim().min(2),
-    description: z.string().trim().min(2),
+    description: z.string().trim()
 })
 
 app.post('/todos', async (req: any, res: any) => {
@@ -169,6 +233,7 @@ app.post('/todos', async (req: any, res: any) => {
 
 // id should be number it cannot be string according to our prisma schema
 const updateTodoBody = z.object({
+    id: z.number(),
     title: z.string().trim().min(2),
     description: z.string().trim().min(2),
     completed: z.boolean(),
