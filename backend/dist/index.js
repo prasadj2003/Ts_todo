@@ -291,6 +291,54 @@ app.delete('/todos/:id', (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
 }));
+app.get('/appointments', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const appointmentArray = yield prisma.appointment.findMany();
+        res.status(200).json({
+            appointmentArray,
+            msg: "appointments fetched successfully"
+        });
+    }
+    catch (error) {
+        console.log("error fetching appointments: ", error);
+        return res.status(403).json({
+            msg: "error fetching appointments"
+        });
+    }
+}));
+const appointmentBody = zod_1.z.object({
+    title: zod_1.z.string().min(1, "Title is required"),
+    dateTime: zod_1.z.string().refine((val) => !isNaN(Date.parse(val)), {
+        message: "Invalid dateTime format",
+    }),
+});
+app.post('/appointments', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = appointmentBody.safeParse(req.body);
+    if (!response.success) {
+        return res.status(403).json({
+            msg: "Appointment body not in proper format",
+        });
+    }
+    try {
+        const { title, dateTime } = req.body; // Get the combined datetime from the frontend
+        const appointment = yield prisma.appointment.create({
+            data: {
+                title: title,
+                dateTime: new Date(dateTime), // Prisma expects DateTime as a JS Date object
+            },
+        });
+        return res.status(200).json({
+            appointment: appointment,
+            msg: "Appointment added successfully",
+        });
+    }
+    catch (error) {
+        console.log("Error adding appointment: ", error);
+        return res.status(403).json({
+            msg: "Error adding appointment",
+        });
+    }
+}));
 app.listen(3000, () => {
     console.log("Server listening...");
 });

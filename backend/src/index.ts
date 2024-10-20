@@ -330,6 +330,60 @@ app.delete('/todos/:id', async(req: any, res: any) => {
     }
 })
 
+app.get('/appointments', async(req: any, res: any) => {
+
+    try {   
+        const appointmentArray = await prisma.appointment.findMany();
+        res.status(200).json({
+            appointmentArray,
+            msg: "appointments fetched successfully"
+        })
+    } catch (error) {
+        console.log("error fetching appointments: ", error);
+        return res.status(403).json({
+            msg: "error fetching appointments"
+        })
+    }
+    
+})
+
+const appointmentBody = z.object({
+    title: z.string().min(1, "Title is required"),
+    dateTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid dateTime format",
+    }),
+  });
+
+app.post('/appointments', async (req: any, res: any) => {
+    const response = appointmentBody.safeParse(req.body);
+    if (!response.success) {
+      return res.status(403).json({
+        msg: "Appointment body not in proper format",
+      });
+    }
+  
+    try {
+      const { title, dateTime } = req.body; // Get the combined datetime from the frontend
+      const appointment = await prisma.appointment.create({
+        data: {
+          title: title,
+          dateTime: new Date(dateTime), // Prisma expects DateTime as a JS Date object
+        },
+      });
+  
+      return res.status(200).json({
+        appointment: appointment,
+        msg: "Appointment added successfully",
+      });
+    } catch (error) {
+      console.log("Error adding appointment: ", error);
+      return res.status(403).json({
+        msg: "Error adding appointment",
+      });
+    }
+  });
+  
+
 
 app.listen(3000, () => {
     console.log("Server listening...");
