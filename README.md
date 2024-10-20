@@ -17,6 +17,10 @@ The **Todo App** helps users to organize their day effortlessly. Manage tasks, t
 
 ![signin](image-1.png)
 ![signup](image-2.png)
+![landing](image-3.png)
+![homepage](image-4.png)
+![calendar](image-5.png)
+![statistics](image-6.png)
 
 ## Project Structure
 
