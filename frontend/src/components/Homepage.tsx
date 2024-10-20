@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Appointment from "./Appointment";
 
 function Homepage() {
   interface Todo {
@@ -156,9 +157,98 @@ function Homepage() {
   }
 
   return (
-    <div className="bg-gradient-to-b from-gray-600 to-gray-800 w-full h-screen flex flex-col items-center justify-start pt-10 overflow-auto">
-      <h1 className="color-white text-white font-bold text-5xl mb-5">TaskTrek</h1>
-      <div className="flex flex-row space-x-4">
+    // <div className="bg-gradient-to-b from-gray-600 to-gray-800 w-full h-screen flex flex-col items-center justify-start pt-10 overflow-auto">
+    //   <h1 className="color-white text-white font-bold text-5xl mb-5">TaskTrek</h1>
+    //   <div className="flex flex-row space-x-4">
+    //     <input
+    //       name="todo"
+    //       id="todo"
+    //       required
+    //       type="text"
+    //       value={todoTitle}
+    //       className="text-black font-mono w-64 p-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+    //       placeholder="Enter a task..."
+    //       onChange={(e) => setTodoTitle(e.target.value)}
+    //     />
+    //     <input
+    //       name="description"
+    //       id="description"
+    //       type="text"
+    //       value={todoDescription}
+    //       className="text-black font-mono w-32 p-3 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+    //       placeholder="Description..."
+    //       onChange={(e) => setTodoDescription(e.target.value)}
+    //     />
+    //     <button
+    //       type="submit"
+    //       className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg px-6 py-3 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none"
+    //       onClick={handleClick}
+    //     >
+    //       {isEditing ? "Update Task" : "Add Task"}
+    //     </button>
+    //   </div>
+
+    //   <div className="mt-8">
+    //     {todos.length > 0 ? (
+    //       todos.map((todo) => (
+    //         <div
+    //           key={todo.id}
+    //           className={`text-white mb-4 bg-slate-500 pt-3 pb-3 pr-5 pl-5 rounded-md w-96 ${
+    //             todo.completed ? "line-through" : ""
+    //           }`}
+    //         >
+    //           <h1 className="text-white font-bold">{todo.title}</h1>
+    //           <h2 className="text-white">{todo.description}</h2>
+    //           <button
+    //             className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 shadow-lg shadow-green-500/50 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+    //             onClick={() => handleComplete(todo.id)}
+    //           >
+    //             Complete
+    //           </button>
+    //           <button
+    //             className="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-lg shadow-cyan-500/50 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+    //             onClick={() => handleEdit(todo.id)}
+    //           >
+    //             Edit
+    //           </button>
+    //           <button
+    //             className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 shadow-lg shadow-red-500/50 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+    //             onClick={() => handleDelete(todo.id)}
+    //           >
+    //             Delete
+    //           </button>
+    //         </div>
+    //       ))
+    //     ) : (
+    //       <p className="text-white">No todos found</p>
+    //     )}
+    //   </div>
+    //   <div className="flex flex-row justify-center items-center">
+    //     <button
+    //       className="w-60 py-3 px-6 mb-4 mr-5 text-lg font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-200"
+    //       onClick={() => navigate("/calendar")}
+    //     >
+    //       calendar
+    //     </button>
+    //     <button
+    //       className="w-60 py-3 px-6 mb-4 ml-5 text-lg font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-200"
+    //       onClick={() => navigate("/statistics")}
+    //     >
+    //       statistics
+    //     </button>
+        
+    //   </div>
+    //   <div className="flex flex-row w-1/2 align-center">
+    //     <Appointment />
+    //   </div> 
+    // </div>
+
+    <div className="bg-gradient-to-b from-gray-600 to-gray-800 w-full h-screen flex items-start justify-center pt-10 overflow-auto">
+  <div className="flex flex-row w-full h-full">
+    {/* TaskTrek Section */}
+    <div className="w-1/2 p-8">
+      <h1 className="text-white font-bold text-5xl mb-5 text-center">TaskTrek</h1>
+      <div className="flex flex-row space-x-4 mb-8 justify-center">
         <input
           name="todo"
           id="todo"
@@ -192,9 +282,7 @@ function Homepage() {
           todos.map((todo) => (
             <div
               key={todo.id}
-              className={`text-white mb-4 bg-slate-500 pt-3 pb-3 pr-5 pl-5 rounded-md w-96 ${
-                todo.completed ? "line-through" : ""
-              }`}
+              className={`text-white mb-4 bg-slate-500 pt-3 pb-3 pr-5 pl-5 rounded-md w-full ${todo.completed ? "line-through" : ""}`}
             >
               <h1 className="text-white font-bold">{todo.title}</h1>
               <h2 className="text-white">{todo.description}</h2>
@@ -222,21 +310,31 @@ function Homepage() {
           <p className="text-white">No todos found</p>
         )}
       </div>
-      <div className="flex flex-row justify-center items-center">
+
+      <div className="flex flex-row justify-center items-center mt-8">
         <button
           className="w-60 py-3 px-6 mb-4 mr-5 text-lg font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-200"
           onClick={() => navigate("/calendar")}
         >
-          calendar
+          Calendar
         </button>
         <button
           className="w-60 py-3 px-6 mb-4 ml-5 text-lg font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-200"
           onClick={() => navigate("/statistics")}
         >
-          statistics
+          Statistics
         </button>
       </div>
     </div>
+
+    {/* Appointment Section */}
+    <div className="w-1/2 p-8">
+      <h1 className="text-white font-bold text-5xl mb-5 text-center">Add Appointment</h1>
+      <Appointment />
+    </div>
+  </div>
+</div>
+
   );
 }
 
